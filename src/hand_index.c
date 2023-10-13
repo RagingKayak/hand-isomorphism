@@ -22,7 +22,7 @@ static void __attribute__((constructor)) hand_index_ctor() {
   }
 
   for(uint_fast32_t i=0; i<1<<RANKS; ++i) {
-    for(uint_fast32_t j=0, set=~i&(1<<RANKS)-1; j<RANKS; ++j, set&=set-1) {
+    for(uint_fast32_t j=0, set=~i&((1<<RANKS)-1); j<RANKS; ++j, set&=set-1) {
       nth_unset[i][j] = set?__builtin_ctz(set):0xff;
     }
   }
@@ -397,7 +397,8 @@ void hand_indexer_state_init(const hand_indexer_t * indexer, hand_indexer_state_
 
 hand_index_t hand_index_all(const hand_indexer_t * indexer, const uint8_t cards[], hand_index_t indices[]) {
   if (indexer->rounds) {
-    hand_indexer_state_t state; hand_indexer_state_init(indexer, &state);
+    hand_indexer_state_t state;
+    hand_indexer_state_init(indexer, &state);
 
     for(uint_fast32_t i=0, j=0; i<indexer->rounds; j+=indexer->cards_per_round[i++]) {
       indices[i] = hand_index_next_round(indexer, cards+j, &state);
